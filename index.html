@@ -129,6 +129,12 @@
             return urlParams.get('img');
         }
         
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
         function displayImage(imagePath) {
             const contentDiv = document.getElementById('content');
             
@@ -144,18 +150,21 @@
             const img = new Image();
             
             img.onload = function() {
-                contentDiv.innerHTML = `
-                    <div class="image-container">
-                        <img src="${imagePath}" alt="Displayed Image">
-                    </div>
-                `;
+                // Clear and create elements safely
+                contentDiv.innerHTML = '';
+                const container = document.createElement('div');
+                container.className = 'image-container';
+                img.alt = 'Displayed Image';
+                container.appendChild(img);
+                contentDiv.appendChild(container);
             };
             
             img.onerror = function() {
+                const escapedPath = escapeHtml(imagePath);
                 contentDiv.innerHTML = `
                     <div class="error">
                         <h3>Error Loading Image</h3>
-                        <p>Failed to load image: ${imagePath}</p>
+                        <p>Failed to load image: ${escapedPath}</p>
                         <p>Please check that the path is correct and the image is accessible.</p>
                     </div>
                 `;
